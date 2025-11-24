@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-all-tables
+      author: Eshwari Chavan
+      comment: create all required tables
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            encoding: utf8
+            path: common/001-create-all-tables.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
