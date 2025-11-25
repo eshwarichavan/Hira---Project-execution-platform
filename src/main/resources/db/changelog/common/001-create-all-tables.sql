@@ -1,7 +1,7 @@
 -- User table :
 CREATE TABLE users(
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
+    user_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE users(
 -- Project table :
 CREATE TABLE project(
     id BIGSERIAL PRIMARY KEY,
-    project_id BIGINT NOT NULL UNIQUE,
+    project_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(50)  NOT NULL UNIQUE,
     description TEXT,
 
@@ -34,7 +34,7 @@ CREATE TABLE project(
 -- Sprint table :
 CREATE TABLE sprint(
     id BIGSERIAL PRIMARY KEY,
-    sprint_id BIGINT NOT NULL UNIQUE,
+    sprint_id VARCHAR(100) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL UNIQUE,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE sprint(
 -- Task table :
 CREATE TABLE tasks(
     id BIGSERIAL PRIMARY KEY,
-    task_id BIGINT NOT NULL UNIQUE,
+    task_id VARCHAR(100) NOT NULL UNIQUE,
     title VARCHAR(50) NOT NULL UNIQUE,
     description TEXT ,
     status VARCHAR(50) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE tasks(
 -- Task_Comments table :
 CREATE TABLE task_comments(
     id BIGSERIAL PRIMARY KEY,
-    comment_id BIGINT NOT NULL UNIQUE,
+    comment_id VARCHAR(100) NOT NULL UNIQUE,
     comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

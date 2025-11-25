@@ -4,6 +4,7 @@ import com.example.projectexecutionplatform.models.enums.TaskPriority;
 import com.example.projectexecutionplatform.models.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Tasks {
 
     @Id
@@ -22,7 +24,7 @@ public class Tasks {
     private Long id;
 
     @Column(name = "task_id")
-    private Long taskId;
+    private String taskId;
 
     @Column(name = "title")
     private String title;

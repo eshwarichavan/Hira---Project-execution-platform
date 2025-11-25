@@ -1,4 +1,4 @@
-package com.example.project_execution_platform;
+package com.example.projectexecutionplatform;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

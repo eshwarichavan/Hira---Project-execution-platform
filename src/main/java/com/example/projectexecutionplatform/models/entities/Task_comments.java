@@ -20,7 +20,7 @@ public class Task_comments {
     private Long id;
 
     @Column(name = "comment_id")
-    private Long commentId;
+    private String commentId;
 
     @Column(name = "comment")
     private String comment;

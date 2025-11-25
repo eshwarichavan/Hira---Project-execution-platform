@@ -1,4 +1,4 @@
-package com.example.project_execution_platform;
+package com.example.projectexecutionplatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

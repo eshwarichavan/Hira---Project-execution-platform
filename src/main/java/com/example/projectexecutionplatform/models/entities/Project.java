@@ -2,6 +2,7 @@ package com.example.projectexecutionplatform.models.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Project {
 
     @Id
@@ -20,7 +22,7 @@ public class Project {
     private Long id;
 
     @Column(name = "project_id", nullable = false, unique = true)
-    private Long projectId;
+    private String projectId;
 
     @Column(name = "name")
     private String name;

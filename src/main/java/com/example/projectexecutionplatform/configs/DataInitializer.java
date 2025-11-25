@@ -3,6 +3,7 @@ package com.example.projectexecutionplatform.configs;
 import com.example.projectexecutionplatform.models.entities.Users;
 import com.example.projectexecutionplatform.models.enums.Roles;
 import com.example.projectexecutionplatform.repositories.UserRepository;
+import com.example.projectexecutionplatform.utils.UserIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +27,10 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${admin.password}")
     private String adminPassword;
 
+    @Value("${admin.name}")
+    private String adminName;
+
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -33,10 +38,13 @@ public class DataInitializer implements CommandLineRunner {
         if(userRepository.findByEmail(adminEmail).isEmpty()){
 
             Users admin = Users.builder()
+                    .userId(UserIdGenerator.generate())
+                    .name(adminName)
                     .email(adminEmail)
                     .password(passwordEncoder.encode(adminPassword))  //Have to bcrypt this pass
                     .role(Roles.ADMIN)
-                    .createdAt(LocalDateTime.now())
+                    .createdBy(null)
+                    .updatedBy(null)
                     .build();
 
             userRepository.save(admin);

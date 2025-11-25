@@ -11,3 +11,17 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: true
+
+
+  - changeSet:
+      id: 002-create-refresh-token-table
+      author: Eshwari Chavan
+      comment: create refresh token table
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            encoding: utf8
+            path: common/002-create-refresh-token-table.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

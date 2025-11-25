@@ -20,7 +20,7 @@ public class Sprint {
     private Long id;
 
     @Column(name = "sprint_id", nullable = false, unique = true)
-    private Long sprintId;  // Public ID
+    private String sprintId;  // Public ID
 
     private String name;
 

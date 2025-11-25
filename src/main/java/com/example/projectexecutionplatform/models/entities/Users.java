@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +23,10 @@ public class Users {
     private Long id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
+
+    @Column(unique = true,name = "name")
+    private String name;
 
     @Column(unique = true,name = "email")
     private String email;
@@ -40,16 +42,26 @@ public class Users {
 
     // Injecting enum :
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name="roles")
+    @Column(nullable = false, name="role")
     private Roles role;
 
     //Mapping :
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
+    private Users createdBy;
 
     @ManyToOne
     @JoinColumn(name = "updated_by")
-    private User updatedBy;
+    private Users updatedBy;
 
+    @PrePersist
+    protected void onCreate(){
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        updatedAt = LocalDateTime.now();
+    }
 }
