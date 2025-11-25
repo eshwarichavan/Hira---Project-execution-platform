@@ -19,7 +19,7 @@ CREATE TABLE users(
 CREATE TABLE project(
     id BIGSERIAL PRIMARY KEY,
     project_id BIGINT NOT NULL UNIQUE,
-    name VARCHAR(50) UNIQUE,
+    name VARCHAR(50)  NOT NULL UNIQUE,
     description TEXT,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -35,7 +35,7 @@ CREATE TABLE project(
 CREATE TABLE sprint(
     id BIGSERIAL PRIMARY KEY,
     sprint_id BIGINT NOT NULL UNIQUE,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     status VARCHAR(50) NOT NULL,

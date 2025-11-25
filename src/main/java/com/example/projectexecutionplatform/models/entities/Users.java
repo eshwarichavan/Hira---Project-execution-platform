@@ -3,6 +3,7 @@ package com.example.projectexecutionplatform.models.entities;
 import com.example.projectexecutionplatform.models.enums.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.catalina.User;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Users {
 
     @Id
