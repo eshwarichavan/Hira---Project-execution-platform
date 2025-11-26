@@ -32,16 +32,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    // Custom execption :
+    // Handle Custom execptions :
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<String> handleApiException(CustomException ex){
-        return new ResponseEntity<>(ex.getMessage(),ex.getStatus());
+    public ResponseEntity<Object> handleCustomException(CustomException ex){
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", ex.getStatus().value());
+        body.put("error", ex.getStatus().name());
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, ex.getStatus());
     }
 
 
-    // Exception :
+    // Catch all unhandled exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
-        return ResponseEntity.status(500).body("Something went wrong: " + ex.getMessage());
+    public ResponseEntity<Object> handleOtherExceptions(Exception ex) {
+
+        HashMap<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        body.put("error", "INTERNAL_SERVER_ERROR");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

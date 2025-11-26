@@ -1,7 +1,8 @@
 package com.example.projectexecutionplatform.models.dtos;
 
 import com.example.projectexecutionplatform.models.enums.Roles;
-import jakarta.validation.constraints.Email;
+import com.example.projectexecutionplatform.validators.StrictEmailAddress;
+import com.example.projectexecutionplatform.validators.ValidPasswordLength;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +18,12 @@ public class UserCreateDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @Email(message = "Invalid email")
+    @StrictEmailAddress
+    @NotBlank(message = "Email is required")
     private String email;
 
     @NotBlank(message = "Password is required")
+    @ValidPasswordLength
     private String password;
 
     private Roles role;

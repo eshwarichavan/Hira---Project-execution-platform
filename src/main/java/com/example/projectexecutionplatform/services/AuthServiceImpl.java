@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class AuthServiceImpl implements  AuthService{
+public class AuthServiceImpl implements AuthService{
 
     @Autowired
     private UserRepository userRepository;

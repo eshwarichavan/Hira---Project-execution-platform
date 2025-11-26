@@ -8,14 +8,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskStatusUpdateDTO {
+@Builder
+public class TaskUpdateRequestDTO {
 
-    @NotNull(message = "Task ID is required")
-    private Long TaskId;
-
-    @NotNull(message = "New status is required")
-    private TaskStatus newStatus;
+    @NotNull(message = "Status is required")
+    private TaskStatus status;
 }

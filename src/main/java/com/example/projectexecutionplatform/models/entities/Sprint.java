@@ -1,8 +1,10 @@
 package com.example.projectexecutionplatform.models.entities;
 
+import com.example.projectexecutionplatform.models.enums.SprintStatus;
 import com.example.projectexecutionplatform.models.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +35,13 @@ public class Sprint {
 
 
     // Injecting enum :
+//    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false, name="task_status")
+//    private TaskStatus status;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name="status")
-    private TaskStatus status;
+    @Column(nullable = false, name="sprint_status")
+    private SprintStatus sprintStatus;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

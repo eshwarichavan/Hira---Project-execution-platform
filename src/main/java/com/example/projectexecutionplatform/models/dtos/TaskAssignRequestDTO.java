@@ -1,6 +1,5 @@
 package com.example.projectexecutionplatform.models.dtos;
 
-import com.example.projectexecutionplatform.models.enums.TaskStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,14 +7,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskStatusUpdateDTO {
+@Builder
+public class TaskAssignRequestDTO {
 
     @NotNull(message = "Task ID is required")
-    private Long TaskId;
+    private String taskId;
 
-    @NotNull(message = "New status is required")
-    private TaskStatus newStatus;
+    @NotNull(message = "User ID is required")
+    private String userId;
+
+    @NotNull(message = "Project ID is required")
+    private String projectId;
 }

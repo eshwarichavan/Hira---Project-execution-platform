@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProjectResponseDTO {
 
-    private Long projectId;
+    private String projectId;
     private String name;
     private String description;
+    private String createdByUserId;  // USR-xxxx
+    private String createdByName;
 }

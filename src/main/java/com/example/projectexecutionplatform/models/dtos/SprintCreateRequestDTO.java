@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class SprintRequestDTO {
+public class SprintCreateRequestDTO {
 
     @NotBlank(message = "Sprint name is required")
     @Size(min = 3, max = 50, message = "Sprint name must be 3–50 characters")
@@ -25,4 +25,10 @@ public class SprintRequestDTO {
 
     @NotNull(message = "Date must be in Format yyyy-MM-dd")
     private LocalDate endDate;
+
+    @NotNull(message = "Project ID is required")
+    private Long projectId;
+
+    @NotNull(message = "Creator ID is required")
+    private Long createdBy;
 }
