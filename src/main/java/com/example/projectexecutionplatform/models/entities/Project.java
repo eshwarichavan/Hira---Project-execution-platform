@@ -36,6 +36,10 @@ public class Project {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "archived")
+    private boolean archived;
+
+
 
     // Mappings :
     @ManyToOne

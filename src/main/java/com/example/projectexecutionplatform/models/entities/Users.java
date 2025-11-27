@@ -40,6 +40,10 @@ public class Users {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "active")
+    private boolean active;
+
+
     // Injecting enum :
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name="role")

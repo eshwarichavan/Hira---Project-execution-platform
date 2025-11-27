@@ -25,3 +25,31 @@ databaseChangeLog:
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: true
+
+
+  - changeSet:
+      id: 003-create-task-audit-history-table
+      author: Eshwari Chavan
+      comment: create audit history table
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            encoding: utf8
+            path: common/003-create-task-audit_history.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+
+
+  - changeSet:
+      id: 004-update-table-columns
+      author: Eshwari Chavan
+      comment: alter users and projects table by adding a column
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            encoding: utf8
+            path: common/004-update-table-columns.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

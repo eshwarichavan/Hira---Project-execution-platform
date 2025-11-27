@@ -1,20 +1,11 @@
 package com.example.projectexecutionplatform.services;
 
 import com.example.projectexecutionplatform.exceptions.CustomException;
-import com.example.projectexecutionplatform.models.dtos.TaskAssignRequestDTO;
-import com.example.projectexecutionplatform.models.dtos.TaskCreateRequestDTO;
-import com.example.projectexecutionplatform.models.dtos.TaskResponseDTO;
-import com.example.projectexecutionplatform.models.dtos.TaskStatusUpdateDTO;
-import com.example.projectexecutionplatform.models.entities.Project;
-import com.example.projectexecutionplatform.models.entities.Sprint;
-import com.example.projectexecutionplatform.models.entities.Tasks;
-import com.example.projectexecutionplatform.models.entities.Users;
+import com.example.projectexecutionplatform.models.dtos.*;
+import com.example.projectexecutionplatform.models.entities.*;
 import com.example.projectexecutionplatform.models.enums.TaskPriority;
 import com.example.projectexecutionplatform.models.enums.TaskStatus;
-import com.example.projectexecutionplatform.repositories.ProjectRepository;
-import com.example.projectexecutionplatform.repositories.SprintRepository;
-import com.example.projectexecutionplatform.repositories.TaskRepository;
-import com.example.projectexecutionplatform.repositories.UserRepository;
+import com.example.projectexecutionplatform.repositories.*;
 import com.example.projectexecutionplatform.specification.TaskSpecification;
 import com.example.projectexecutionplatform.utils.TaskIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +35,8 @@ public class TaskServiceImpl {
     @Autowired
     private SprintRepository sprintRepository;
 
+    @Autowired
+    private TaskAuditRepository taskAuditRepository;
 
     // create task :
     public TaskResponseDTO createTask(TaskCreateRequestDTO dto){
@@ -57,12 +50,17 @@ public class TaskServiceImpl {
         Users assignedUser = userRepository.findById(dto.getAssignedTo())
                 .orElseThrow(() -> new CustomException("Assigned user not found", HttpStatus.NOT_FOUND));
 
+        //for duplicate entries :
+        if (taskRepository.existsByTitle(dto.getTitle())) {
+            throw new CustomException("Task with this title already exists", HttpStatus.BAD_REQUEST);
+        }
+
+
         Sprint sprint = null;
         if (dto.getSprintId() != null) {
             sprint = sprintRepository.findById(dto.getSprintId())
                     .orElseThrow(() -> new CustomException("Sprint not found", HttpStatus.NOT_FOUND));
 
-            // Optional: ensure sprint belongs to same project
             if (!sprint.getProject().getId().equals(project.getId())) {
                 throw new CustomException("Sprint does not belong to this project", HttpStatus.BAD_REQUEST);
             }
@@ -107,14 +105,15 @@ public class TaskServiceImpl {
             throw new CustomException("Task does not belong to this project", HttpStatus.BAD_REQUEST);
         }
 
-        //  Check user exists
         Users user = userRepository.findByUserId(dto.getUserId())
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
+        if(users.getCreatedBy() == null || project.getCreatedBy() == null) {
+            throw new CustomException("User or Project creator details missing", HttpStatus.BAD_REQUEST);
+        }
 
-        // Check task belongs to the project :
-        if(!users.getCreatedBy().getId().equals(project.getCreatedBy().getId())){
-            throw new CustomException("User doesn't belong to this project",HttpStatus.BAD_REQUEST);
+        if(!users.getCreatedBy().getId().equals(project.getCreatedBy().getId())) {
+            throw new CustomException("User doesn't belong to this project", HttpStatus.BAD_REQUEST);
         }
 
         //active tasks :
@@ -141,19 +140,50 @@ public class TaskServiceImpl {
 
 
     // Update Task details using its id :
-    public String updateTaskStatus(Long id, TaskStatusUpdateDTO dto){
+    public String updateTaskStatus(String task_id, TaskStatusUpdateDTO dto) {
 
-    Tasks task = taskRepository.findById(id)
-                .orElseThrow(()-> new CustomException("Task Not found",HttpStatus.NOT_FOUND));
 
-        TaskStatus oldStatus=task.getStatus();
-        TaskStatus newStatus=task.getStatus();
+        Tasks task = taskRepository.findByTaskId(task_id)
+                .orElseThrow(() -> new CustomException("Task Not found", HttpStatus.NOT_FOUND));
+
+
+
+        // for active user & archived projects :
+        Users assignedUser=task.getAssignedTo();
+        Project project=task.getProject();
+
+
+        // reject if user is inactive :
+        if(!assignedUser.isActive()){
+            throw new CustomException("Cannot update Task . Assigned User is INACTIVE",HttpStatus.BAD_REQUEST);
+        }
+
+        // reject if project is archived :
+        if(project.isArchived()){
+            throw new CustomException("Cannot update Task . Project is archived.",HttpStatus.BAD_REQUEST);
+        }
+
+
+        // for statuses :
+        TaskStatus oldStatus = task.getStatus();
+        TaskStatus newStatus = dto.getNewStatus();
+
+        // audit entry :
+        TaskAudit audit = TaskAudit.builder()
+                .taskId(task.getTaskId())
+                .oldStatus(oldStatus)
+                .newStatus(newStatus)
+                .updatedBy(dto.UpdatedBy)
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        taskAuditRepository.save(audit);
 
 
         // Validate allowed transitions
-        if (!isAllowedTransition(oldStatus, newStatus)) {
+        if (!isAllowedTransition(oldStatus, newStatus,task)) {
             throw new CustomException(
-                    "Invalid transition: " + oldStatus + " → " + newStatus,
+                    "Invalid transition: " + oldStatus + " => " + newStatus,
                     HttpStatus.BAD_REQUEST
             );
         }
@@ -168,28 +198,65 @@ public class TaskServiceImpl {
     }
 
 
+    // Audit History :
+    public  Page<TaskAuditResponseDTO> getAuditHistory(
+            String taskId,
+            int page,
+            int size,
+            String sortDir
+    ){
+        Sort sort=sortDir.equalsIgnoreCase("ASC") ?
+                Sort.by("updatedAt").ascending() :
+                Sort.by("updatedAt").descending();
+
+        Pageable pageable=PageRequest.of(page,size,sort);
+
+        Page<TaskAudit> audits=taskAuditRepository.findByTaskId(taskId,pageable);
+
+        return audits.map(this::mapAudit);
+
+    }
+
+
+
     // status transition logic :
-    private boolean isAllowedTransition(TaskStatus oldStatus,TaskStatus newStatus){
+    private boolean isAllowedTransition(TaskStatus oldStatus, TaskStatus newStatus, Tasks task){
 
-        switch (oldStatus){
+        if(oldStatus == TaskStatus.CLOSED){
+            throw new CustomException("Cannot update status of a CLOSED task. ",HttpStatus.BAD_REQUEST);
+        }
 
+
+        if(newStatus == TaskStatus.COMPLETED){
+            if(task.getDueDate() == null || task.getAssignedTo() == null){
+                throw new CustomException("Cannot mark as COMPLETE . Required fields are missing (dueDate or assignedMembers",HttpStatus.BAD_REQUEST);
+            }
+        }
+
+         switch (oldStatus){
             case CREATED :
                 return newStatus == TaskStatus.ASSIGNED;
 
             case ASSIGNED:
-                return newStatus == TaskStatus.ASSIGNED;
-
-            case IN_PROGRESS:
                 return newStatus == TaskStatus.IN_PROGRESS;
 
+            case IN_PROGRESS:
+                return newStatus == TaskStatus.BLOCKED
+                        || newStatus == TaskStatus.COMPLETED;
+
             case BLOCKED:
-                return newStatus == TaskStatus.BLOCKED;
+                return newStatus == TaskStatus.IN_PROGRESS;
+
+            case COMPLETED:
+                return newStatus == TaskStatus.CLOSED;
 
             default:
                 return false;
 
         }
     }
+
+
 
 
     // Search :
@@ -207,7 +274,7 @@ public class TaskServiceImpl {
             String sortDir,
             boolean useDueDate
     ) {
-        // Validate referenced resources if present
+
         if (projectId != null && !projectRepository.existsById(projectId)) {
             throw new CustomException("Project not found", HttpStatus.NOT_FOUND);
         }
@@ -215,21 +282,19 @@ public class TaskServiceImpl {
             throw new CustomException("Assigned user not found", HttpStatus.NOT_FOUND);
         }
 
-        // Build spec
+
         var spec = TaskSpecification.filter(projectId, assignedToId, status, priority, dueFrom, dueTo, keyword, useDueDate);
 
-        // Sort + Pageable
+        // Sort & Pageable :
         String effectiveSortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy;
         Sort.Direction dir = (sortDir == null || sortDir.equalsIgnoreCase("ASC")) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), Sort.by(dir, effectiveSortBy));
 
-        // If filtering by createdAt using LocalDate range, convert to LocalDateTime bounds in an additional predicate is simpler — but our spec handles basic cases.
         Page<Tasks> results = taskRepository.findAll(spec, pageable);
 
         // map to DTO page
         return results.map(this::map);
     }
-
 
 
 
@@ -246,5 +311,17 @@ public class TaskServiceImpl {
                 .assignedTo(t.getAssignedTo().getName())
                 .createdAt(t.getCreatedAt())
                 .build();
+    }
+
+
+    // task audit mapper :
+    private TaskAuditResponseDTO mapAudit(TaskAudit audit){
+        TaskAuditResponseDTO dto=new TaskAuditResponseDTO();
+        dto.setTaskId(audit.getTaskId());
+        dto.setOldStatus(audit.getOldStatus());
+        dto.setNewStatus(audit.getNewStatus());
+        dto.setUpdatedBy(audit.getUpdatedBy());
+        dto.setUpdatedAt(audit.getUpdatedAt());
+        return dto;
     }
 }

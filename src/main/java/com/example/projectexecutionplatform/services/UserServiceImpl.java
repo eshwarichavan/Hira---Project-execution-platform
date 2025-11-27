@@ -4,6 +4,7 @@ import com.example.projectexecutionplatform.exceptions.CustomException;
 import com.example.projectexecutionplatform.models.dtos.UserCreateDTO;
 import com.example.projectexecutionplatform.models.dtos.UserResponseDTO;
 import com.example.projectexecutionplatform.models.entities.Users;
+import com.example.projectexecutionplatform.models.enums.Roles;
 import com.example.projectexecutionplatform.repositories.UserRepository;
 import com.example.projectexecutionplatform.utils.UserIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class UserServiceImpl implements UsersService{
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(dto.getRole())
+                .role(Roles.valueOf(dto.getRole()))
                 .build();
 
         userRepository.save(user);
@@ -69,13 +70,23 @@ public class UserServiceImpl implements UsersService{
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
 
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setRole(dto.getRole());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
+
+        if (dto.getName() != null && !dto.getName().isBlank()) {
+            user.setName(dto.getName());
+        }
+
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getRole() != null && !dto.getRole().isBlank()) {
+            user.setRole(Roles.valueOf(dto.getRole()));
+        }
+
 
         userRepository.save(user);
 

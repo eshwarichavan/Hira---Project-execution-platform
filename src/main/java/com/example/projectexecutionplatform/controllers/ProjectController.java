@@ -34,10 +34,10 @@ public class ProjectController {
 
 
     // get project by id :
-    @GetMapping("/getProject/{id}")
+    @GetMapping("/getProject/{project_id}")
     @Operation(summary = "Get Project details by its id ")
-    public ProjectResponseDTO getProject(@PathVariable Long id){
-        return projectService.getProject(id);
+    public ProjectResponseDTO getProject(@PathVariable String project_id){
+        return projectService.getProject(project_id);
     }
 
 
@@ -50,23 +50,23 @@ public class ProjectController {
 
 
     // update project details by id
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{project_id}")
     @Operation(summary = "Update Project details by its id ")
     public ProjectResponseDTO updateProject(
             @Valid
-            @PathVariable Long id,
+            @PathVariable String project_id,
             @RequestBody ProjectUpdateDTO dto){
 
-        return projectService.updateProject(id,dto);
+        return projectService.updateProject(project_id,dto);
     }
 
 
     // delete project details by id :
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{project_id}")
     @Operation(summary = "Delete Project details by its id ")
-    public String deleteProject(@PathVariable Long id){
+    public String deleteProject(@PathVariable String project_id){
 
-        projectService.deleteProject(id);
+        projectService.deleteProject(project_id);
         return "Project Deleted Successfully !";
     }
 

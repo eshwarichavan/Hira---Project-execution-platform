@@ -45,14 +45,30 @@ public class TaskController {
 
 
     // update status :
-    @PutMapping("/status/{id}")
+    @PutMapping("/status/{task_id}")
     @Operation(summary = "updates the task to the user")
     public ResponseEntity<?> updateStatus(
             @Valid
-            @PathVariable Long id,
+            @PathVariable String task_id,
             @RequestBody TaskStatusUpdateDTO dto) {
-        return ResponseEntity.ok(taskService.updateTaskStatus(id,dto));
+        return ResponseEntity.ok(taskService.updateTaskStatus(task_id,dto));
     }
+
+
+    // audit history :
+    @GetMapping("/audit/{taskId}")
+    @Operation(summary = "Audit History")
+    public ResponseEntity<?> getAuditHistory(
+            @PathVariable String taskId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "DESC") String sortDir
+            ){
+
+        return ResponseEntity.ok(taskService.getAuditHistory(taskId,page,size,sortDir));
+
+    }
+
 
 
     // search :

@@ -9,7 +9,7 @@ public class ProjectIdGenerator {
 
     // for project_id generation :
     public static String generate() {
-        return "USR-" + UUID.randomUUID().toString()
+        return "PRO-" + UUID.randomUUID().toString()
                 .substring(0, 8)
                 .toUpperCase();
     }

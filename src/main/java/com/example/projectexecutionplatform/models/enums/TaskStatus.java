@@ -5,6 +5,7 @@ public enum TaskStatus {
     CREATED ,
      ASSIGNED,
      IN_PROGRESS,
-     COMPLETED,x
-    BLOCKED
+     COMPLETED,
+    BLOCKED,
+    CLOSED
 }

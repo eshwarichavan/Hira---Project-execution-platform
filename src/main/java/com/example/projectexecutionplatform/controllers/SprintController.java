@@ -45,30 +45,30 @@ public class SprintController {
 
 
     //get sprint by id :
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById/{sprintId}")
     @Operation(summary = "Get Sprint details by its id ")
-    public SprintResponseDTO getSprintById(@PathVariable Long id){
-        return sprintService.getSprintById(id);
+    public SprintResponseDTO getSprintById(@PathVariable String sprintId){
+        return sprintService.getSprintById(sprintId);
     }
 
 
     // update sprint by id :
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{sprintId}")
     @Operation(summary = "Update Sprint details by its id ")
     public SprintResponseDTO updateSprint(
             @Valid
-            @PathVariable Long id,
+            @PathVariable String  sprintId,
             @RequestBody SprintUpdateRequestDTO dto){
 
-        return sprintService.updateSprint(id,dto);
+        return sprintService.updateSprint(sprintId,dto);
     }
 
 
     // delete sprint by id :
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{sprintId}")
     @Operation(summary = "Delete Sprint details by its id ")
-    public ResponseEntity<String> deleteSprint(@PathVariable Long id){
-        sprintService.deleteSprint(id);
+    public ResponseEntity<String> deleteSprint(@PathVariable String  sprintId){
+        sprintService.deleteSprint(sprintId);
 
         return ResponseEntity.ok("Sprint deleted successfully");
     }

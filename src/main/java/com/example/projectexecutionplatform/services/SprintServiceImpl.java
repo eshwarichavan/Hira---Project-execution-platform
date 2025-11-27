@@ -35,6 +35,12 @@ public class SprintServiceImpl {
     // create the sprint :
     public SprintResponseDTO createSprint(SprintCreateRequestDTO dto){
 
+        // for handling duplications :
+        if (sprintRepository.existsByNameAndProjectId(dto.getName(), dto.getProjectId())) {
+            throw new CustomException("Sprint with this name already exists in this project", HttpStatus.BAD_REQUEST);
+        }
+
+
         // Handling the exceptions :
         Project project = projectRepository.findById(dto.getProjectId())
                 .orElseThrow(()-> new CustomException("Project not found", HttpStatus.NOT_FOUND));
@@ -66,8 +72,8 @@ public class SprintServiceImpl {
 
 
     // get sprint by id :
-    public SprintResponseDTO getSprintById(Long id){
-        Sprint sprint=sprintRepository.findById(id)
+    public SprintResponseDTO getSprintById(String sprintId){
+        Sprint sprint=sprintRepository.findBySprintId(sprintId)
                 .orElseThrow(()-> new CustomException("Sprint Not found " ,HttpStatus.NOT_FOUND));
 
         return mapToResponse(sprint);
@@ -85,9 +91,9 @@ public class SprintServiceImpl {
 
 
     // update sprint details :
-    public SprintResponseDTO updateSprint(Long id,SprintUpdateRequestDTO dto){
+    public SprintResponseDTO updateSprint(String sprintId,SprintUpdateRequestDTO dto){
 
-        Sprint sprint=sprintRepository.findById(id)
+        Sprint sprint=sprintRepository.findBySprintId(sprintId)
                 .orElseThrow(()-> new CustomException("Sprint Not found",HttpStatus.NOT_FOUND));
 
         sprint.setName(dto.getName());
@@ -105,8 +111,8 @@ public class SprintServiceImpl {
 
 
     // delete sprint details :
-    public void deleteSprint(Long id){
-        Sprint sprint=sprintRepository.findById(id)
+    public void deleteSprint(String sprintId){
+        Sprint sprint=sprintRepository.findBySprintId(sprintId)
                 .orElseThrow(() -> new CustomException("Sprint not found ",HttpStatus.NOT_FOUND));
 
         sprintRepository.save(sprint);

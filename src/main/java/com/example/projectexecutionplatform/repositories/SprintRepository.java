@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface SprintRepository extends JpaRepository<Sprint,Long> {
 
     Optional<Sprint> findBySprintId(String sprintId);
+
+    boolean existsByNameAndProjectId(String name,Long projectId);
 }

@@ -9,7 +9,7 @@ public class SprintIdGenerator {
 
     // for sprint_id generation :
     public static String generate() {
-        return "USR-" + UUID.randomUUID().toString()
+        return "SPR-" + UUID.randomUUID().toString()
                 .substring(0, 8)
                 .toUpperCase();
     }

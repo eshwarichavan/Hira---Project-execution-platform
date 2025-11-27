@@ -30,6 +30,12 @@ public class ProjectServiceImpl {
     // create project :
     public ProjectResponseDTO createProject(ProjectCreateRequestDTO dto) {
 
+        //for duplicate entries :
+        if (projectRepository.existsByName(dto.getName())) {
+            throw new CustomException("Project name already exists", HttpStatus.BAD_REQUEST);
+        }
+
+
         Users creator = userRepository.findById(dto.getCreatedBy())
                 .orElseThrow(() -> new CustomException("Creator user not found", HttpStatus.NOT_FOUND));
 
@@ -53,8 +59,8 @@ public class ProjectServiceImpl {
 
 
     // get project by id
-    public ProjectResponseDTO getProject(Long id) {
-        Project project = projectRepository.findById(id)
+    public ProjectResponseDTO getProject(String project_id) {
+        Project project = projectRepository.findByProjectId(project_id)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
         return mapToDto(project);
     }
@@ -70,8 +76,8 @@ public class ProjectServiceImpl {
 
 
     // update Project details using id :
-    public ProjectResponseDTO updateProject(Long id, ProjectUpdateDTO dto) {
-        Project project = projectRepository.findById(id)
+    public ProjectResponseDTO updateProject(String project_id, ProjectUpdateDTO dto) {
+        Project project = projectRepository.findByProjectId(project_id)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
 
         if (dto.getName() != null) project.setName(dto.getName());
@@ -85,8 +91,8 @@ public class ProjectServiceImpl {
 
 
     // delete project by id :
-    public void deleteProject(Long id) {
-        Project project = projectRepository.findById(id)
+    public void deleteProject(String project_id) {
+        Project project = projectRepository.findByProjectId(project_id)
                 .orElseThrow(() -> new CustomException("Project not found", HttpStatus.NOT_FOUND));
 
         projectRepository.delete(project);

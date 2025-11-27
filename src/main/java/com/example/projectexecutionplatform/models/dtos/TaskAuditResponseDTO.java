@@ -1,25 +1,22 @@
 package com.example.projectexecutionplatform.models.dtos;
 
 import com.example.projectexecutionplatform.models.enums.TaskStatus;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskStatusUpdateDTO {
+@Builder
+public class TaskAuditResponseDTO {
 
-
-    @NotNull(message = "Task ID is required")
-    private Long TaskId;
-
-    @NotNull(message = "New status is required")
+    private String taskId;
+    private TaskStatus oldStatus;
     private TaskStatus newStatus;
-
-    @NotNull(message = "Updated by is required")
-    public Long UpdatedBy;
+    private Long updatedBy;
+    private LocalDateTime updatedAt;
 }
